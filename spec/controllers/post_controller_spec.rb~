@@ -1,0 +1,50 @@
+require 'rails_helper'
+
+RSpec.describe PostController, :type => :controller do
+  before(:all) do
+    @post1 = Post.create(title: "My title", content: "My content")
+  end
+
+  context '#index' do
+    before { visit posts_path }
+
+    it "should have a homepage title" do
+      expect(page).to have_content("Listing posts")
+    end
+
+    it "should have my content" do
+      expect(page).to have_content("My title")
+      expect(page).to have_content("My content")
+    end
+  end
+
+  context '#new' do
+    before do
+      visit new_post_path 
+    end
+
+    it "should have a new file title" do
+      expect(page).to have_content("New post")
+    end
+  end
+
+  context '#create' do
+    before do
+      visit new_post_path 
+      fill_in "post_title", :with => "New title"
+      fill_in "post_content", :with => "New content"
+    end
+
+    it "is able to add new post" do
+      expect { click_button "Post" }.to change(Post, :count).by(1)
+    end
+  end
+
+  context '#destroy' do
+    before { visit posts_path }
+
+    it "is able to delete existing post" do
+      expect { click_link "#{@post1.id}_destroy" }.to change(Post, :count).by(-1)
+    end
+  end
+end
